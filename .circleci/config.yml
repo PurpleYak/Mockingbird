@@ -1,20 +1,48 @@
 version: 2.1
 jobs:
-  build:
+  build-middleware:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
-
     steps:
       - checkout
-
       - run:
-          name: Restore Packages
-          command: dotnet restore
-
+          name: Restore packages
+          command: dotnet restore Mockingbird
       - run:
-          name: Build Mockingbird
-          command: dotnet build
-
+          name: Build project
+          command: dotnet build Mockingbird
+  test-middleware:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+    steps:
+      - checkout
       - run:
-          name: Test Mockingbird
-          command: dotnet test
+          name: Restore packages
+          command: dotnet restore Mockingbird.Tests
+      - run:
+          name: Test project
+          command: dotnet test Mockingbird.Tests
+  build-ui:
+    docker:
+      - image: node:lts-alpine
+    steps:
+      - checkout
+      - run:
+          name: Install packages
+          command: |
+            cd Mockingbird.UI
+            npm install
+      - run:
+          name: Build project
+          command: |
+            cd Mockingbird.UI
+            npm run build
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test-middleware:
+          requires:
+            - build-middleware
+      - build-middleware
+      - build-ui
