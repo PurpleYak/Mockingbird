@@ -45,7 +45,7 @@ namespace Mockingbird
             return ProcessEndpoint(context, loadedEndpoints);
         }
 
-        private async Task<bool> ProcessEndpoint(HttpContext context, IEnumerable<Models.Mockingbird> loadedEndpoints)
+        private async Task<bool> ProcessEndpoint(HttpContext context, IEnumerable<Models.Endpoint> loadedEndpoints)
         {
             foreach (var endpoint in loadedEndpoints)
             {

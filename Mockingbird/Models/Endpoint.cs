@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Mockingbird.Models
 {
-    public class Mockingbird
+    public class Endpoint
     {
         public string Name { get; set; }
         public string Description { get; set; }

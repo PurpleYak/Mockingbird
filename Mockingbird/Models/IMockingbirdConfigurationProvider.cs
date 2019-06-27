@@ -4,7 +4,7 @@ namespace Mockingbird.Models
 {
     public interface IMockingbirdConfigurationProvider
     {
-        IEnumerable<Mockingbird> Load();
-        void Save(IEnumerable<Mockingbird> configuration);
+        IEnumerable<Endpoint> Load();
+        void Save(IEnumerable<Endpoint> configuration);
     }
 }
