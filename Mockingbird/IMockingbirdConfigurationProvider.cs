@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Mockingbird.Models;
 
-namespace Mockingbird.Models
+namespace Mockingbird
 {
     public interface IMockingbirdConfigurationProvider
     {

@@ -3,7 +3,7 @@ using System.Net;
 
 namespace Mockingbird.Models
 {
-    public class MockingbirdResponse
+    public class EndpointResponse
     {
         public HttpStatusCode Status { get; set; }
         public int StatusCode => (int)Status;
