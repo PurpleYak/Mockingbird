@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Mockingbird.Models;
+using Mockingbird.Extensions;
+using Mockingbird.Middleware;
 
 namespace Mockingbird
 {
@@ -38,56 +37,39 @@ namespace Mockingbird
             await _next(context);
         }
 
-        private Task<bool> HandleMockingbirdEndpointAsync(HttpContext context)
+        private async Task<bool> HandleMockingbirdEndpointAsync(HttpContext context)
         {
+            var requestProcessor = new EndpointRequestProcessor(context.Request);
+            var responseProcessor = new EndpointResponseProcessor(context.Response);
             var loadedEndpoints = _configurationProvider.Load();
 
-            return ProcessEndpoint(context, loadedEndpoints);
-        }
-
-        private async Task<bool> ProcessEndpoint(HttpContext context, IEnumerable<Models.Endpoint> loadedEndpoints)
-        {
             foreach (var endpoint in loadedEndpoints)
             {
-                if (!endpoint.Enabled)
+                if (!requestProcessor.EndpointMatches(endpoint))
                 {
                     continue;
                 }
 
-                if (endpoint.Request.Method.ToString().ToLower() != context.Request.Method.ToLower())
-                {
-                    continue;
-                }
-
-                var url = AppendQuery(context.Request.Path, context.Request.QueryString.Value);
-
-                if (!Regex.IsMatch(url.ToLower(), endpoint.Request.PathMatcherPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled))
-                {
-                    continue;
-                }
-
-                // We match request, now sort the response
                 if (_options.AddMockingbirdTestingHeaderResponse)
                 {
-                    context.Response.Headers.Add(_options.MockingbirdTestingHeaderResponseValue, string.Empty);
+                    responseProcessor.AddHeaderToResponse(_options.MockingbirdTestingHeaderResponseValue);
                 }
 
-                foreach (var header in endpoint.Response.Headers)
+                foreach (var header in endpoint.Response.Headers.OrEmptyIfNull())
                 {
-                    context.Response.Headers.Add(header.Key, header.Value);
+                    responseProcessor.AddHeaderToResponse(header.Key, header.Value);
                 }
 
-                context.Response.StatusCode = endpoint.Response.StatusCode;
+                responseProcessor.SetStatusCode(endpoint.Response.StatusCode);
 
                 if (!string.IsNullOrWhiteSpace(endpoint.Response.Body))
                 {
-                    await context.Response.WriteAsync(endpoint.Response.Body);
+                    await responseProcessor.SetResponseBody(endpoint.Response.Body);
                 }
 
-                await Task.Delay(endpoint.Response.DelayInMilliseconds);
+                await responseProcessor.Delay(endpoint.Response.DelayInMilliseconds);
 
                 return true;
-
             }
             return false;
         }
@@ -95,13 +77,14 @@ namespace Mockingbird
         private Task<bool> HandleMockingbirdUIAsync(HttpContext context)
         {
             var path = context.Request.Path.Value.ToLower();
+            var mockingBirdUIPath = _options.MockingbirdUIPath.ToLower();
 
-            if (path == _options.MockingbirdUIPath)
+            if (path == mockingBirdUIPath)
             {
                 // load UI
             }
 
-            if (path == _options.MockingbirdUIPath + "/endpoints")
+            if (path == mockingBirdUIPath + "/endpoints")
             {
                 // if get load config and return
                 // if post save config and return 201
