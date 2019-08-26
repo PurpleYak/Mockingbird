@@ -50,9 +50,5 @@ namespace Mockingbird.Middleware
 
             return url;
         }
-
-
-
-
     }
 }
