@@ -91,8 +91,6 @@ namespace Mockingbird
             }
 
             return Task.FromResult(false);
-
-
         }
 
         private static string AppendQuery(string path, string query)
@@ -106,9 +104,5 @@ namespace Mockingbird
 
             return url;
         }
-
-
-
-
     }
 }
