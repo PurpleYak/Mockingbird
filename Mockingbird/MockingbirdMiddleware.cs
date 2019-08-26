@@ -57,7 +57,7 @@ namespace Mockingbird
 
                 foreach (var header in endpoint.Response.Headers.OrEmptyIfNull())
                 {
-                    responseProcessor.AddHeaderToResponse(header.Key, header.Value);
+                    responseProcessor.AddHeaderToResponse(header.Name, header.Value);
                 }
 
                 responseProcessor.SetStatusCode(endpoint.Response.StatusCode);
