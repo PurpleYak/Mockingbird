@@ -17,9 +17,9 @@ namespace Mockingbird
 
         public MockingbirdMiddleware(RequestDelegate next, IOptions<MockingbirdOptions> options, ILoggerFactory loggerFactory)
         {
-            this._next = next;
-            this._options = options.Value;
-            this._logger = loggerFactory.CreateLogger<MockingbirdMiddleware>();
+            _next = next;
+            _options = options.Value;
+            _logger = loggerFactory.CreateLogger<MockingbirdMiddleware>();
         }
 
         public async Task InvokeAsync(HttpContext context)
