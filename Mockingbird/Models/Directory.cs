@@ -7,6 +7,6 @@ namespace Mockingbird.Models
     {
         public string Name { get; set; }
         public IEnumerable<Directory> Subdirectory { get; set; } = new List<Directory>();
-        public IEnumerable<Route> Routes { get; set; } = new List<Route>();
+        public IEnumerable<IRouter> Routes { get; set; } = new List<IRouter>();
     }
 }
